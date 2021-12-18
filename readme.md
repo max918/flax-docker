@@ -7,11 +7,11 @@ These examples shows valid setups using Flax for both docker run and docker-comp
 ### Docker run
 
 ```bash
-docker run --name flax -d ghcr.io/flax-network/flax:latest --expose=6888 -v /path/to/plots:/plots
+docker run --name flax -d max918/flax-docker:1.2.11 --expose=6888 -v /path/to/plots:/plots
 ```
 Syntax
 ```bash
-docker run --name <container-name> -d ghcr.io/flax-network/flax:latest 
+docker run --name <container-name> -d max918/flax-docker/flax:1.2.11
 optional accept incoming connections: --expose=6888
 optional: -v /path/to/plots:/plots
 ```
@@ -24,7 +24,7 @@ services:
   flax:
     container_name: flax
     restart: unless-stopped
-    image: max918/flax-docker:latest
+    image: max918/flax-docker:1.2.11
     ports:
       - 6888:6888
     volumes:
@@ -116,7 +116,7 @@ services:
   flax:
     container_name: flax
     restart: unless-stopped
-    image: max918/flax-docker:latest
+    image: max918/flax-docker:1.2.11
     ports:
       - 6888:6888
     environment:
@@ -166,7 +166,7 @@ docker exec -it flax venv/bin/flax farm summary
 ### Connect to testnet?
 
 ```bash
-docker run -d --expose=56888 -e testnet=true --name flax ghcr.io/flax-network/flax:latest
+docker run -d --expose=56888 -e testnet=true --name flax max918/flax-network/flax:1.2.11
 ```
 
 #### Need a wallet?
