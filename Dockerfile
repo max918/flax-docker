@@ -1,9 +1,9 @@
 FROM ubuntu:latest
 
-EXPOSE 8555
-EXPOSE 8444
+EXPOSE 6755
+EXPOSE 6888
 
-ENV CHIA_ROOT=/root/.chia/mainnet
+ENV FLAX_ROOT=/root/.flax/mainnet
 ENV keys="generate"
 ENV harvester="false"
 ENV farmer="false"
@@ -23,13 +23,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteract
 ARG BRANCH=latest
 
 RUN echo "cloning ${BRANCH}" && \
-    git clone --branch ${BRANCH} https://github.com/Chia-Network/chia-blockchain.git && \
-    cd chia-blockchain && \
+    git clone --branch ${BRANCH} https://github.com/Flax-Network/flax-blockchain.git && \
+    cd flax-blockchain && \
     git submodule update --init mozilla-ca && \
     /usr/bin/sh ./install.sh
 
-ENV PATH=/chia-blockchain/venv/bin:$PATH
-WORKDIR /chia-blockchain
+ENV PATH=/flax-blockchain/venv/bin:$PATH
+WORKDIR /flax-blockchain
 
 COPY docker-start.sh /usr/local/bin/
 COPY docker-entrypoint.sh /usr/local/bin/

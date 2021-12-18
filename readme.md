@@ -1,18 +1,18 @@
-# Official Chia Docker Container
+# Unofficial Flax Docker Container
 
 ## Quick Start
 
-These examples shows valid setups using Chia for both docker run and docker-compose. Note that you should read some documentation at some point, but this is a good place to start.
+These examples shows valid setups using Flax for both docker run and docker-compose. Note that you should read some documentation at some point, but this is a good place to start.
 
 ### Docker run
 
 ```bash
-docker run --name chia -d ghcr.io/chia-network/chia:latest --expose=8444 -v /path/to/plots:/plots
+docker run --name flax -d ghcr.io/flax-network/flax:latest --expose=6888 -v /path/to/plots:/plots
 ```
 Syntax
 ```bash
-docker run --name <container-name> -d ghcr.io/chia-network/chia:latest 
-optional accept incoming connections: --expose=8444
+docker run --name <container-name> -d ghcr.io/flax-network/flax:latest 
+optional accept incoming connections: --expose=6888
 optional: -v /path/to/plots:/plots
 ```
 
@@ -21,26 +21,26 @@ optional: -v /path/to/plots:/plots
 ```yaml
 version: "3.6"
 services:
-  chia:
-    container_name: chia
+  flax:
+    container_name: flax
     restart: unless-stopped
-    image: ghcr.io/chia-network/chia:latest
+    image: max918/flax-docker:latest
     ports:
-      - 8444:8444
+      - 6888:6888
     volumes:
       - /path/to/plots:/plots
 ```
 
 ## Configuration
 
-You can modify the behavior of your Chia container by setting specific environment variables.
+You can modify the behavior of your Flax container by setting specific environment variables.
 
 ### Timezone
 
 Set the timezone for the container (optional, defaults to UTC).
 Timezones can be configured using the `TZ` env variable. A list of supported time zones can be found [here](http://manpages.ubuntu.com/manpages/focal/man3/DateTime::TimeZone::Catalog.3pm.html)
 ```bash
--e TZ="America/Chicago"
+-e TZ="Asia/Hong_Kong"
 ```
 
 ### Add your custom keys
@@ -51,15 +51,15 @@ To use your own keys pass as arguments on startup (post 1.0.2 pre 1.0.2 must man
 ```
 or pass keys into the running container
 ```bash
-docker exec -it <container-name> venv/bin/chia keys add
+docker exec -it <container-name> venv/bin/flax keys add
 ```
-alternatively you can pass in your local keychain, if you have previously deployed chia with these keys on the host machine
+alternatively you can pass in your local keychain, if you have previously deployed flax with these keys on the host machine
 ```bash
 -v ~/.local/share/python_keyring/:/root/.local/share/python_keyring/
 ```
 or if you would like to persist the entire mainnet subdirectory and not touch the key directories at all
 ```bash
--v ~/.chia/mainnet:/root/.chia/mainnet -e keys="persistent"
+-v ~/.flax/mainnet:/root/.flax/mainnet -e keys="persistent"
 ```
 
 
@@ -67,7 +67,7 @@ or if you would like to persist the entire mainnet subdirectory and not touch th
 
 You can persist whole db and configuration, simply mount it to Host.
 ```bash
--v ~/.chia:/root/.chia
+-v ~/.flax:/root/.flax
 ```
 
 ### Farmer only
@@ -103,7 +103,7 @@ To enable UPnP support (disabled by default)
 ```
 
 ### Log to file
-To enable log file generation, which can be used by external tools like chiadog, etc...
+To enable log file generation, which can be used by external tools like flaxdog, etc...
 ```bash
 -e log_to_file="true"
 ```
@@ -113,19 +113,19 @@ To enable log file generation, which can be used by external tools like chiadog,
 ```yaml
 version: "3.6"
 services:
-  chia:
-    container_name: chia
+  flax:
+    container_name: flax
     restart: unless-stopped
-    image: ghcr.io/chia-network/chia:latest
+    image: max918/flax-docker:latest
     ports:
-      - 8444:8444
+      - 6888:6888
     environment:
       # Farmer Only
 #     - farmer=true
       # Harvester Only
 #     - harvester=true
 #     - farmer_address=192.168.0.10
-#     - farmer_port=8447
+#     - farmer_port=6885
 #     - ca=/path/in/container
 #     - keys=copy
       # Harvester Only END
@@ -141,32 +141,32 @@ services:
 #     - log_to_file=true
     volumes:
       - /path/to/plots:/plots
-      - /home/user/.chia:/root/.chia
+      - /home/user/.flax:/root/.flax
 #     - /home/user/mnemonic:/path/in/container
 ```
 
 ## CLI
 
-You can run commands externally with venv (this works for most chia [CLI commands](https://github.com/Chia-Network/chia-blockchain/wiki/CLI-Commands-Reference))
+You can run commands externally with venv (this works for most flax [CLI commands](https://github.com/Chia-Network/chia-blockchain/wiki/CLI-Commands-Reference))
 ```bash
-docker exec -it chia venv/bin/chia plots add -d /plots
+docker exec -it flax venv/bin/flax plots add -d /plots
 ```
 
 ### Is it working?
 
 You can see status from outside the container
 ```bash
-docker exec -it chia venv/bin/chia show -s -c
+docker exec -it flax venv/bin/flax show -s -c
 ```
 or
 ```bash
-docker exec -it chia venv/bin/chia farm summary
+docker exec -it flax venv/bin/flax farm summary
 ```
 
 ### Connect to testnet?
 
 ```bash
-docker run -d --expose=58444 -e testnet=true --name chia ghcr.io/chia-network/chia:latest
+docker run -d --expose=56888 -e testnet=true --name flax ghcr.io/flax-network/flax:latest
 ```
 
 #### Need a wallet?
@@ -174,11 +174,11 @@ docker run -d --expose=58444 -e testnet=true --name chia ghcr.io/chia-network/ch
 To get new wallet, execute command and follow the prompts:
 
 ```bash
-docker exec -it chia-farmer1 venv/bin/chia wallet show
+docker exec -it flax-farmer1 venv/bin/flax wallet show
 ```
 
 ## Building
 
 ```bash
-docker build -t chia --build-arg BRANCH=latest .
+docker build -t flax --build-arg BRANCH=latest .
 ```
