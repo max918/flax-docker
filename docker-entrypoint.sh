@@ -21,7 +21,7 @@ fi
 if [[ ${keys} == "persistent" ]]; then
   echo "Not touching key directories"
 elif [[ ${keys} == "generate" ]]; then
-  echo "to use your own keys pass them as a text file -v /path/to/keyfile:/path/in/container and -e keys=\"/path/in/container\""
+  echo "to use your own keys pass the mnemonic as a text file -v /path/to/keyfile:/path/in/container and -e keys=\"/path/in/container\""
   flax keys generate
 elif [[ ${keys} == "copy" ]]; then
   if [[ -z ${ca} ]]; then
@@ -31,7 +31,7 @@ elif [[ ${keys} == "copy" ]]; then
   flax init -c "${ca}"
   fi
 else
-  flax keys add -f "${keys}"
+  flax keys add -f "${keys}" -l ""
 fi
 
 for p in ${plots_dir//:/ }; do
@@ -48,16 +48,51 @@ if [[ -n "${log_level}" ]]; then
   flax configure --log-level "${log_level}"
 fi
 
+if [[ -n "${peer_count}" ]]; then
+  flax configure --set-peer-count "${peer_count}"
+fi
+
+if [[ -n "${outbound_peer_count}" ]]; then
+  flax configure --set_outbound-peer-count "${outbound_peer_count}"
+fi
+
 if [[ -n ${farmer_address} && -n ${farmer_port} ]]; then
   flax configure --set-farmer-peer "${farmer_address}:${farmer_port}"
 fi
 
+if [[ -n ${crawler_db_path} ]]; then
+  flax configure --crawler-db-path "${crawler_db_path}"
+fi
+
+if [[ -n ${crawler_minimum_version_count} ]]; then
+  flax configure --crawler-minimum-version-count "${crawler_minimum_version_count}"
+fi
+
+if [[ -n ${self_hostname} ]]; then
+  sed -i "s/self_hostname: localhost/self_hostname: $self_hostname/g" "$FLAX_ROOT/config/config.yaml"
+fi
+
+# TODO: Document why this is needed
 sed -i 's/localhost/127.0.0.1/g' "$FLAX_ROOT/config/config.yaml"
 
 if [[ ${log_to_file} != 'true' ]]; then
   sed -i 's/log_stdout: false/log_stdout: true/g' "$FLAX_ROOT/config/config.yaml"
 else
   sed -i 's/log_stdout: true/log_stdout: false/g' "$FLAX_ROOT/config/config.yaml"
+fi
+
+# Map deprecated legacy startup options.
+if [[ ${farmer} == "true" ]]; then
+  service="farmer-only"
+elif [[ ${harvester} == "true" ]]; then
+  service="harvester"
+fi
+
+if [[ ${service} == "harvester" ]]; then
+  if [[ -z ${farmer_address} || -z ${farmer_port} || -z ${ca} ]]; then
+    echo "A farmer peer address, port, and ca path are required."
+    exit
+  fi
 fi
 
 exec "$@"

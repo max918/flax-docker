@@ -1,21 +1,11 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC2154
-if [[ ${farmer} == 'true' ]]; then
-  flax start farmer-only
-elif [[ ${harvester} == 'true' ]]; then
-  if [[ -z ${farmer_address} || -z ${farmer_port} || -z ${ca} ]]; then
-    echo "A farmer peer address, port, and ca path are required."
-    exit
-  else
-    flax start harvester
-  fi
-else
-  flax start farmer
-fi
+# shellcheck disable=SC2154,SC2086
+flax start ${service}
 
 trap "echo Shutting down ...; flax stop all -d; exit 0" SIGINT SIGTERM
 
+# shellcheck disable=SC2154
 if [[ ${log_to_file} == 'true' ]]; then
   # Ensures the log file actually exists, so we can tail successfully
   touch "$FLAX_ROOT/log/debug.log"
